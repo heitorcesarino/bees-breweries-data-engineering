@@ -1,11 +1,11 @@
-🐝 # BEES Data Engineering – Breweries Case
+# 🐝BEES Data Engineering – Breweries Case
 
 This project implements an end-to-end data pipeline that consumes data from the Open Brewery DB API and persists it into a data lake following the Medallion Architecture (Bronze, Silver, Gold).
 
 The solution focuses on clean architecture, testability, and production-ready practices, simulating a real-world data engineering workflow.
 
 
-🎯 ## Objective
+## 🎯Objective
 
 Consume brewery data from a public API
 
@@ -20,7 +20,7 @@ Orchestrate the pipeline using Airflow
 Ensure code quality with unit tests and modular design
 
 
-🏗️ ## Architecture Overview##
+## 🏗️Architecture Overview
 API (Open Brewery DB)
         ↓
      Bronze Layer (Raw JSON)
@@ -30,7 +30,7 @@ API (Open Brewery DB)
      Gold Layer (Aggregated analytics)
 
 
-🥉 ## Bronze Layer
+## 🥉Bronze Layer
 
 Purpose:
 Persist raw data from the API with minimal transformation.
@@ -44,7 +44,7 @@ Stored as JSON files
 Acts as a historical and immutable source of truth
 
 
-🥈 ## Silver Layer
+## 🥈Silver Layer
 
 Purpose:
 Clean, normalize, and structure the raw data.
@@ -66,7 +66,7 @@ city
 Prepares data for analytical consumption
 
 
-🥇 ## Gold Layer
+## 🥇Gold Layer
 
 Purpose:
 Provide business-ready aggregated data.
@@ -96,7 +96,7 @@ brewery_type
 brewery_count
 
 
-🛫 ## Orchestration (Airflow)
+## 🛫Orchestration (Airflow)
 
 The pipeline is orchestrated using Apache Airflow.
 
@@ -118,7 +118,7 @@ Bronze → Silver → Gold
 The DAG is intentionally thin, delegating business logic to reusable pipeline components.
 
 
-🧪 ## Testing Strategy
+## 🧪Testing Strategy
 
 Unit tests implemented for:
 
@@ -141,7 +141,7 @@ Deterministic tests
 Easy local execution
 
 
-🛠️ ## Tech Stack
+## 🛠️Tech Stack
 
 Python 3.12
 
@@ -158,7 +158,7 @@ Pydantic – data contracts
 Docker-ready architecture (optional extension)
 
 
-▶️ ## How to Run Locally
+## ▶️How to Run Locally
 1️⃣ Install dependencies
 poetry install
 
@@ -169,7 +169,7 @@ poetry run python -m pytest -v
 from bees_breweries.pipelines.bronze_pipeline import BronzeBreweriesPipeline
 
 
-📊 ## Monitoring & Alerting (Design)
+## 📊Monitoring & Alerting (Design)
 
 In a production environment, monitoring would include:
 
@@ -196,7 +196,7 @@ Metrics on row counts per layer
 Historical data lineage via Bronze persistence
 
 
-⚖️ ## Design Decisions & Trade-offs
+## ⚖️Design Decisions & Trade-offs
 
 Pandas over Spark: chosen for simplicity and clarity in a technical assessment.
 In production, this pipeline could be migrated to Spark for scalability.
@@ -208,7 +208,7 @@ Medallion architecture: ensures separation of concerns and data reliability.
 Thin DAG, fat pipelines: improves testability and reusability.
 
 
-🚀 ## Future Improvements
+## 🚀Future Improvements
 
 Migrate Silver/Gold layers to Spark
 
@@ -221,7 +221,7 @@ Deploy Airflow with KubernetesExecutor
 Add CI pipeline for automated testing
 
 
-👤 ## Author
+## 👤Author
 
 Heitor Cesarino
 Data Engineer
