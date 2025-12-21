@@ -1,16 +1,21 @@
-[project]
+[tool.poetry]
 name = "bees-breweries"
 version = "0.1.0"
 description = "Data pipeline for Open Brewery DB using medallion architecture"
-authors = [
-    {name = "Heitor Cesarino", email = "heitor.cesarino@gmail.com"}
-]
+authors = ["Heitor Cesarino <heitor.cesarino@gmail.com>"]
 readme = "README.md"
-requires-python = ">=3.10,<3.13"
-dependencies = ["requests (>=2.32.5,<3.0.0)", "pandas (>=2.3.3,<3.0.0)", "pyarrow (>=22.0.0,<23.0.0)", "pydantic (>=2.12.5,<3.0.0)"]
+packages = [{ include = "bees_breweries", from = "src" }]
 
-[tool.poetry]
-packages = [{ include = "bees_breweries" }]
+[tool.poetry.dependencies]
+python = ">=3.10,<3.13"
+requests = "^2.32.5"
+pandas = "^2.3.3"
+pyarrow = "^22.0.0"
+pydantic = "^2.12.5"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0"
+responses = "^0.25.0"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
