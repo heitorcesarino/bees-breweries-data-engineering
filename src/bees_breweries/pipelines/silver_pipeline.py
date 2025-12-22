@@ -9,7 +9,7 @@ from bees_breweries.utils.logger import get_logger
 logger = get_logger(__name__)
 
 
-class SilverPipeline:
+class SilverBreweriesPipeline:
     def __init__(
         self,
         bronze_path: str = "data/bronze/breweries",
@@ -24,18 +24,24 @@ class SilverPipeline:
 
         records: list[dict] = []
 
-        for file in self.bronze_path.glob("*.json"):
-            logger.info("Reading bronze file %s", file)
-            with open(file, "r", encoding="utf-8") as f:
-                records.extend(json.load(f))
+        # percorre as partições ingestion_date=YYYY-MM-DD
+        for partition in self.bronze_path.glob("ingestion_date=*"):
+            if not partition.is_dir():
+                continue
+
+            for file in partition.glob("*.json"):
+                logger.info("Reading bronze file %s", file)
+                with open(file, "r", encoding="utf-8") as f:
+                    records.extend(json.load(f))
+
+        if not records:
+            raise ValueError("No records found in bronze layer")
 
         return records
 
     def _normalize(self, records: list[dict]) -> pd.DataFrame:
         breweries = [Brewery(**record) for record in records]
-
         df = pd.DataFrame([brewery.model_dump() for brewery in breweries])
-
         return df
 
     def run(self) -> Path:
