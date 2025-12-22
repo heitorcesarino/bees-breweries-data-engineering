@@ -1,7 +1,7 @@
 import json
 from datetime import date
 from pathlib import Path
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 
 from bees_breweries.utils.logger import get_logger
 
@@ -38,7 +38,7 @@ class BronzeStorage:
     def save_json(
         self,
         dataset: str,
-        data: List[Dict],
+        data: List[Any],  # pode ser dict ou objetos Pydantic
         ingestion_date: Optional[date] = None,
         filename: str = "data.json",
     ) -> Path:
@@ -47,7 +47,7 @@ class BronzeStorage:
 
         Args:
             dataset: Logical dataset name (e.g. "breweries")
-            data: Raw data returned from the API
+            data: Raw data returned from the API (list of dicts or Pydantic objects)
             ingestion_date: Date of ingestion (defaults to today)
             filename: Output file name
 
@@ -56,6 +56,12 @@ class BronzeStorage:
         """
         if not data:
             raise ValueError("No data provided to persist in bronze layer")
+
+        # Converter objetos Pydantic para dicts
+        serializable_data = [
+            item.model_dump() if hasattr(item, "model_dump") else item
+            for item in data
+        ]
 
         partition_path = self._build_partition_path(dataset, ingestion_date)
         partition_path.mkdir(parents=True, exist_ok=True)
@@ -66,12 +72,12 @@ class BronzeStorage:
             "Persisting bronze data",
             extra={
                 "dataset": dataset,
-                "records": len(data),
+                "records": len(serializable_data),
                 "path": str(file_path),
             },
         )
 
         with file_path.open("w", encoding="utf-8") as file:
-            json.dump(data, file, ensure_ascii=False, indent=2)
+            json.dump(serializable_data, file, ensure_ascii=False, indent=2)
 
         return file_path
