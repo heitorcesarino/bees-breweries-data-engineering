@@ -1,227 +1,241 @@
-# 🐝BEES Data Engineering – Breweries Case
+# BEES Data Engineering – Breweries Case
 
-This project implements an end-to-end data pipeline that consumes data from the Open Brewery DB API and persists it into a data lake following the Medallion Architecture (Bronze, Silver, Gold).
+## Overview
 
-The solution focuses on clean architecture, testability, and production-ready practices, simulating a real-world data engineering workflow.
+This repository contains an end-to-end **data engineering pipeline** that consumes data from the **Open Brewery DB API** and persists it into a data lake following the **Medallion Architecture** (Bronze, Silver, Gold).
 
+The project was designed to be **clean, modular, testable, and production-oriented**, simulating a real-world data engineering workflow while remaining easy to run locally for evaluation purposes.
 
-## 🎯Objective
+---
 
-Consume brewery data from a public API
+## Objectives
 
-Persist raw data in a Bronze layer
+The main goals of this project are to:
 
-Transform and curate data into a Silver layer
+- Consume brewery data from a public API
+- Persist raw data in a **Bronze** layer
+- Transform and curate data into a **Silver** layer
+- Build an analytical **Gold** layer with aggregated insights
+- Demonstrate orchestration concepts using **Apache Airflow**
+- Apply good software engineering practices (tests, modularity, error handling)
 
-Create an analytical Gold layer with aggregated insights
+This directly addresses the requirements defined in the **BEES Data Engineering – Breweries Case** technical assessment.
 
-Orchestrate the pipeline using Airflow
+---
 
-Ensure code quality with unit tests and modular design
+## Architecture Overview
 
-
-## 🏗️Architecture Overview
-API (Open Brewery DB)
+```
+Open Brewery DB API
         ↓
      Bronze Layer (Raw JSON)
         ↓
      Silver Layer (Parquet, partitioned by location)
         ↓
      Gold Layer (Aggregated analytics)
+```
 
+Each layer has a clear responsibility and is implemented as an independent pipeline component.
 
-## 🥉Bronze Layer
+---
 
-Purpose:
+## Medallion Layers
+
+### 🟤 Bronze Layer
+
+**Purpose**  
 Persist raw data from the API with minimal transformation.
 
-Details:
+**Details**
+- Data fetched via a dedicated API client
+- Stored as JSON files
+- Immutable, historical source of truth
 
-Data is fetched using a dedicated API client
+---
 
-Stored as JSON files
+### ⚪ Silver Layer
 
-Acts as a historical and immutable source of truth
+**Purpose**  
+Clean, normalize, and structure raw data for analytical use.
 
+**Details**
+- Reads JSON files from the Bronze layer
+- Converts data to **Parquet** format
+- Partitions data by:
+  - country
+  - state
+  - city
 
-## 🥈Silver Layer
+This layer prepares the data for efficient querying and aggregation.
 
-Purpose:
-Clean, normalize, and structure the raw data.
+---
 
-Details:
+### 🟡 Gold Layer
 
-Reads JSON files from the Bronze layer
+**Purpose**  
+Provide business-ready, aggregated datasets.
 
-Converts data to Parquet format
+**Aggregation logic**
+- Count of breweries grouped by:
+  - brewery_type
+  - country
+  - state
+  - city
 
-Partitions data by:
+**Output schema**
+- country
+- state
+- city
+- brewery_type
+- brewery_count
 
-country
+---
 
-state
+## Orchestration Strategy
 
-city
+### Apache Airflow (Design)
 
-Prepares data for analytical consumption
+An **Apache Airflow DAG** was implemented to demonstrate orchestration capabilities, including:
 
+- Task dependencies (Bronze → Silver → Gold)
+- Retries and retry delays
+- Scheduling configuration
 
-## 🥇Gold Layer
+> **Important note**  
+> Apache Airflow is **not executed locally in this project** due to native limitations on Windows environments.
 
-Purpose:
-Provide business-ready aggregated data.
+### Why Airflow is not executed locally
 
-Aggregation:
+- Airflow is officially supported only on **POSIX-compliant systems** (Linux / macOS)
+- Local execution on Windows requires **WSL2 or Docker**, which would add unnecessary complexity for a technical assessment
 
-Quantity of breweries by:
+### Design choice
 
-brewery_type
+- The **DAG is fully implemented and production-ready**
+- Business logic lives inside reusable pipeline modules
+- Pipelines are executed locally via a **`run_pipeline.py` entry point**
 
-country
+This approach ensures:
+- Easy local execution for evaluators
+- Clean separation between orchestration and business logic
+- Smooth migration to a real Airflow environment if needed
 
-state
+---
 
-city
+## Running the Project Locally
 
-Output schema:
+### 1️⃣ Clone the repository
 
-country
+```bash
+git clone https://github.com/heitorcesarino/bees-breweries-data-engineering.git
+cd bees-breweries
+```
 
-state
+---
 
-city
+### 2️⃣ Install Poetry
 
-brewery_type
+If you don't have Poetry installed:
 
-brewery_count
+```bash
+pip install poetry
+```
 
+---
 
-## 🛫Orchestration (Airflow)
+### 3️⃣ Install dependencies
 
-The pipeline is orchestrated using Apache Airflow.
-
-DAG characteristics:
-
-Schedule: @daily
-
-Retries: 3
-
-Retry delay: 5 minutes
-
-Catchup disabled
-
-Clear dependency chain:
-
-Bronze → Silver → Gold
-
-
-The DAG is intentionally thin, delegating business logic to reusable pipeline components.
-
-
-## 🧪Testing Strategy
-
-Unit tests implemented for:
-
-API client
-
-Storage layers
-
-Pipeline logic (Bronze, Silver, Gold)
-
-External API calls are mocked
-
-Temporary file systems (tmp_path) are used for isolation
-
-This ensures:
-
-High test coverage
-
-Deterministic tests
-
-Easy local execution
-
-
-## 🛠️Tech Stack
-
-Python 3.12
-
-Poetry – dependency management
-
-Pandas / PyArrow – data processing
-
-Apache Airflow – orchestration
-
-Pytest – testing
-
-Pydantic – data contracts
-
-Docker-ready architecture (optional extension)
-
-
-## ▶️How to Run Locally
-1️⃣ Install dependencies
+```bash
 poetry install
+```
 
-2️⃣ Run tests
-poetry run python -m pytest -v
+---
 
-3️⃣ Run pipelines manually (example)
-from bees_breweries.pipelines.bronze_pipeline import BronzeBreweriesPipeline
+### 4️⃣ Activate the virtual environment
 
+```bash
+poetry shell
+```
 
-## 📊Monitoring & Alerting (Design)
+---
 
-In a production environment, monitoring would include:
+### 5️⃣ Run tests
 
-Pipeline Health
+```bash
+poetry run pytest -v
+```
 
-Airflow task failure alerts (email / Slack)
+All external API calls are mocked to ensure deterministic and fast tests.
 
-SLA miss detection
+---
 
-Data Quality
+### 6️⃣ Run the pipelines manually
 
-Empty dataset detection
+The entire pipeline can be executed locally using the provided runner:
 
-Schema validation failures
+```bash
+poetry run python run_pipeline.py
+```
 
-Unexpected volume changes (day-over-day)
+This will execute:
+1. Bronze ingestion
+2. Silver transformation
+3. Gold aggregation
 
-Observability
+---
 
-Structured logging
+## Monitoring & Alerting (Design Proposal)
 
-Metrics on row counts per layer
+In a production environment, monitoring and alerting would include:
 
-Historical data lineage via Bronze persistence
+### Pipeline Health
+- Task failure alerts (Slack / Email)
+- Retry and SLA miss detection
 
+### Data Quality
+- Empty dataset detection
+- Schema validation
+- Unexpected volume changes (day-over-day)
 
-## ⚖️Design Decisions & Trade-offs
+### Observability
+- Structured logging
+- Row count metrics per layer
+- Historical traceability via Bronze persistence
 
-Pandas over Spark: chosen for simplicity and clarity in a technical assessment.
-In production, this pipeline could be migrated to Spark for scalability.
+---
 
-Parquet format: efficient columnar storage for analytical workloads.
+## Tech Stack
 
-Medallion architecture: ensures separation of concerns and data reliability.
+- **Python 3.12**
+- **Poetry** – dependency and environment management
+- **Pandas / PyArrow** – data processing
+- **Apache Airflow** – orchestration (design-level)
+- **Pytest** – unit testing
+- **Pydantic** – configuration and data contracts
 
-Thin DAG, fat pipelines: improves testability and reusability.
+---
 
+## Design Decisions & Trade-offs
 
-## 🚀Future Improvements
+- **Pandas over Spark**: chosen for simplicity and clarity in a technical assessment. The architecture allows an easy migration to Spark.
+- **Parquet format**: efficient columnar storage for analytics.
+- **Medallion architecture**: ensures separation of concerns and data reliability.
+- **Thin DAG, fat pipelines**: improves testability and reusability.
 
-Migrate Silver/Gold layers to Spark
+---
 
-Introduce Delta Lake
+## Future Improvements
 
-Add data validation with Great Expectations
+- Migrate Silver and Gold layers to Spark
+- Introduce Delta Lake
+- Add data validation with Great Expectations
+- Deploy Airflow using Docker / Kubernetes
+- Add CI pipeline for automated testing
 
-Deploy Airflow with KubernetesExecutor
+---
 
-Add CI pipeline for automated testing
+## Author
 
-
-## 👤Author
-
-Heitor Cesarino
+**Heitor Cesarino**  
 Data Engineer
+
