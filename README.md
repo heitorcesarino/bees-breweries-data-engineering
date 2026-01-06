@@ -63,8 +63,6 @@ Clean, normalize, and structure raw data for analytical use.
 - Converts data to **Parquet** format
 - Partitions data by:
   - country
-  - state
-  - city
 
 This layer prepares the data for efficient querying and aggregation.
 
@@ -183,6 +181,25 @@ This will execute:
 3. Gold aggregation
 
 ---
+
+## Data Quality & Validation
+
+After executing the pipelines, the project provides a dedicated validation step to ensure
+data consistency across all layers of the data lake (Bronze, Silver, and Gold).
+
+The validation process checks:
+- The number of records ingested in the Bronze layer
+- The consistency of transformed records in the Silver layer
+- The correctness of aggregations in the Gold layer
+- Guarantees that no data loss or duplication occurred between layers
+
+### How to Run the Validation
+
+Make sure the pipelines have been executed before running the validation.
+
+```bash
+poetry run python run_validation.py
+```
 
 ## Monitoring & Alerting (Design Proposal)
 

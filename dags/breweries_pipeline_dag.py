@@ -33,7 +33,7 @@ def run_bronze():
 def run_silver():
     pipeline = SilverBreweriesPipeline(
         bronze_path=settings.BRONZE_BREWERIES_PATH,
-        storage=SilverStorage(),  # usa settings internamente
+        storage=SilverStorage(),  # use settings internally
     )
     pipeline.run()
 
