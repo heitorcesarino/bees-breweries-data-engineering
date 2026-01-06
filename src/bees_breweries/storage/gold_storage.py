@@ -10,7 +10,7 @@ logger = get_logger(__name__)
 class GoldStorage:
     def __init__(self, base_path: str | None = None):
         # data/gold/breweries
-        self.base_path = Path(base_path or settings.GOLD_PATH) / "breweries"
+        self.base_path = Path(base_path or settings.GOLD_PATH)
         self.base_path.mkdir(parents=True, exist_ok=True)
 
     def save_breweries(

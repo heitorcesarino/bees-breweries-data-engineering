@@ -3,6 +3,7 @@ from datetime import date
 from pathlib import Path
 from typing import List, Dict, Optional, Any
 
+from bees_breweries.config.settings import settings
 from bees_breweries.utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -16,8 +17,9 @@ class BronzeStorage:
     from the source system, partitioned by ingestion date.
     """
 
-    def __init__(self, base_path: str = "data/bronze"):
-        self.base_path = Path(base_path)
+    def __init__(self, base_path: Path | None = None):
+        self.base_path = base_path or settings.BRONZE_PATH
+        self.base_path.mkdir(parents=True, exist_ok=True)
 
     def _build_partition_path(
         self,

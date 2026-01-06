@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 
 class Settings(BaseModel):
-    # API
+    # API settings
     BREWERY_API_BASE_URL: str = "https://api.openbrewerydb.org/v1/breweries"
     DEFAULT_PER_PAGE: int = 50
     REQUEST_TIMEOUT: int = 10
@@ -13,7 +13,7 @@ class Settings(BaseModel):
     SILVER_PATH: Path = Path("data/silver")
     GOLD_PATH: Path = Path("data/gold")
 
-    # Derived dataset paths (centralizados aqui)
+    # Derived dataset paths (centralized here for easy access)
     @property
     def BRONZE_BREWERIES_PATH(self) -> Path:
         return self.BRONZE_PATH / "breweries"
