@@ -8,8 +8,13 @@ logger = get_logger(__name__)
 
 
 class GoldStorage:
+    """
+    Storage responsible for persisting aggregated data in the Gold layer.
+    """
     def __init__(self, base_path: str | None = None):
-        # data/gold/breweries
+        """
+        Initialize the Gold storage base path.
+        """
         self.base_path = Path(base_path or settings.GOLD_PATH)
         self.base_path.mkdir(parents=True, exist_ok=True)
 
@@ -18,6 +23,9 @@ class GoldStorage:
         df: pd.DataFrame,
         filename: str = "breweries_by_type_and_location.parquet",
     ) -> Path:
+        """
+        Persist aggregated brewery data as a Parquet file.
+        """
         output_path = self.base_path / filename
 
         logger.info(

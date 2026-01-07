@@ -9,15 +9,29 @@ logger = get_logger(__name__)
 
 
 class GoldBreweriesPipeline:
+    """
+    Pipeline responsible for generating aggregated brewery metrics
+    in the Gold layer.
+    """
     def __init__(
         self,
         silver_path: Path | None = None,
         storage: GoldStorage | None = None,
     ):
+        """
+        Initialize the pipeline with the Silver dataset path and Gold storage.
+        """
         self.silver_path = silver_path or settings.SILVER_BREWERIES_PATH
         self.storage = storage or GoldStorage(settings.GOLD_BREWERIES_PATH)
 
+
     def run(self) -> Path:
+        """
+        Execute the Gold transformation process.
+
+        Reads the Silver dataset, aggregates brewery counts by location
+        and brewery type, and persists the result in the Gold layer.
+        """
         logger.info("Starting Gold Breweries Pipeline")
 
         if not self.silver_path.exists():

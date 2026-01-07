@@ -33,15 +33,25 @@ def normalize_string(value: str | None) -> str:
 
 
 class SilverBreweriesPipeline:
+    """
+    Pipeline responsible for cleaning and normalizing brewery data
+    from the Bronze layer into the Silver layer.
+    """
     def __init__(
         self,
         bronze_path: Path | None = None,
         storage: SilverStorage | None = None,
     ):
+        """
+        Initialize the pipeline with Bronze input path and Silver storage.
+        """
         self.bronze_path = bronze_path or settings.BRONZE_BREWERIES_PATH
         self.storage = storage or SilverStorage()
 
     def _load_bronze_files(self) -> list[dict]:
+        """
+        Load raw JSON records from the Bronze layer.
+        """
         if not self.bronze_path.exists():
             raise FileNotFoundError(f"Bronze path not found: {self.bronze_path}")
 
@@ -65,6 +75,9 @@ class SilverBreweriesPipeline:
         return records
 
     def _normalize(self, records: list[dict]) -> pd.DataFrame:
+        """
+        Validate and normalize brewery records into a structured DataFrame.
+        """
         breweries = [Brewery(**record) for record in records]
         df = pd.DataFrame([brewery.model_dump() for brewery in breweries])
 
@@ -77,6 +90,9 @@ class SilverBreweriesPipeline:
         return df
 
     def run(self) -> Path:
+        """
+        Execute the Silver transformation process.
+        """
         logger.info("Starting Silver Breweries Pipeline")
 
         records = self._load_bronze_files()

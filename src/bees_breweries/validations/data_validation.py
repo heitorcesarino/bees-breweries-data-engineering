@@ -6,13 +6,24 @@ from bees_breweries.config.settings import settings
 
 
 class DataLakeValidator:
+    """
+    Simple validator for Bronze, Silver and Gold data layers.
+
+    Ensures record presence, basic schema integrity and consistency
+    between aggregation layers.
+    """
     def __init__(self):
+        """
+        Initialize validator with Bronze, Silver and Gold paths.
+        """
         self.bronze_path = settings.BRONZE_BREWERIES_PATH
         self.silver_path = settings.SILVER_BREWERIES_PATH
         self.gold_path = settings.GOLD_BREWERIES_PATH
 
-    # ---------- Bronze ----------
     def validate_bronze(self) -> dict:
+        """
+        Validate presence and volume of data in the Bronze layer.
+        """
         partitions = 0
         files = 0
         records = 0
@@ -42,8 +53,10 @@ class DataLakeValidator:
             "records": records,
         }
 
-    # ---------- Silver ----------
     def validate_silver(self) -> dict:
+        """
+        Validate data completeness and basic integrity in the Silver layer.
+        """
         df = pd.read_parquet(self.silver_path)
 
         total_records = len(df)
@@ -66,8 +79,10 @@ class DataLakeValidator:
             "states": states,
         }
 
-    # ---------- Gold ----------
     def validate_gold(self, silver_records: int) -> dict:
+        """
+        Validate aggregation consistency between Silver and Gold layers.
+        """
         gold_file = (
             self.gold_path / "breweries_by_type_and_location.parquet"
         )
@@ -96,8 +111,10 @@ class DataLakeValidator:
             "total_breweries": total_breweries,
         }
 
-    # ---------- Runner ----------
     def run(self):
+        """
+        Execute end-to-end validation across all data lake layers.
+        """
         print("\n=== DATA LAKE VALIDATION STARTED ===\n")
 
         bronze_metrics = self.validate_bronze()
