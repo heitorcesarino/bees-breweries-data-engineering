@@ -19,10 +19,19 @@ class BronzeBreweriesPipeline:
         client: Optional[BreweryAPIClient] = None,
         storage: Optional[BronzeStorage] = None,
     ):
+        """
+        Initialize the pipeline with an API client and Bronze storage.
+        """
         self.client = client or BreweryAPIClient()
         self.storage = storage or BronzeStorage()
 
     def run(self, ingestion_date: Optional[date] = None) -> None:
+        """
+        Execute the Bronze ingestion process.
+
+        Fetches brewery data from the external API and persists it
+        as raw data in the Bronze layer.
+        """
         logger.info("Starting Bronze Breweries Pipeline")
 
         breweries = self.client.fetch_breweries()

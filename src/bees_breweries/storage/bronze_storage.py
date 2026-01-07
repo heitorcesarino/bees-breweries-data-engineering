@@ -18,6 +18,9 @@ class BronzeStorage:
     """
 
     def __init__(self, base_path: Path | None = None):
+        """
+        Initialize the Bronze storage base path.
+        """
         self.base_path = base_path or settings.BRONZE_PATH
         self.base_path.mkdir(parents=True, exist_ok=True)
 
